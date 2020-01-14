@@ -1,5 +1,4 @@
-import { fetchProxerAnimeList, fetchProxerMangaList } from './proxerCrawler';
+import html from './proxer-example';
+import { getAnimesFromHTML } from './proxerCrawler';
 
-const html = fetchProxerAnimeList('519518');
-
-html.then(a => console.log(a));
+getAnimesFromHTML(html).forEach(a => console.log(a));
