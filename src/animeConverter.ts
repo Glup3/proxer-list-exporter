@@ -1,5 +1,39 @@
 import { request } from 'graphql-request';
+import Bottleneck from 'bottleneck';
 import builder from 'xmlbuilder';
+
+const limiter = new Bottleneck({
+  minTime: 700,
+  maxConcurrent: 1,
+});
+
+const convertProxerTypeToMALType = (type: string) => {
+  switch (type) {
+    case 'TV':
+      return 'TV';
+    case 'OVA':
+      return 'OVA';
+    case 'MOVIE':
+      return 'Movie';
+    default:
+      return null;
+  }
+};
+
+const convertProxerStatusToMALStatus = (status: string) => {
+  switch (status) {
+    case 'COMPLETED':
+      return 'Completed';
+    case 'WATCHING':
+      return 'Watching';
+    case 'PLANNED':
+      return 'Plan to Watch';
+    case 'DROPPED':
+      return 'Dropped';
+    default:
+      return null;
+  }
+};
 
 export const getMALIDFromAnilist = async (name: string, type: string) => {
   const query = `
@@ -25,32 +59,44 @@ export const getMALIDFromAnilist = async (name: string, type: string) => {
 
   const anime = result.Page.media[0];
 
-  if (anime.title.romaji.includes(name) || anime.title.english.includes(name)) {
-    return anime.idMal;
-  }
-
-  return null;
+  return anime.idMal;
 };
 
 export const exportAnimesToMALAnimeXML = async (animes: Anime[]) => {
+  const result = await limiter.schedule(() => {
+    const allTasks = animes.map(x => getMALIDFromAnilist(x.title, x.type));
+
+    return Promise.all(allTasks);
+  });
+
   const root = builder.create('myanimelist');
+  root.com('Created by Glup3 - last update 15-01-2020');
 
-  // const promises = [];
+  for (let index = 0; index < result.length; index++) {
+    const entry = root.ele('anime');
+    entry.ele('series_animedb_id', {}, result[index]);
+    entry.ele('series_title', {}, animes[index].title);
+    entry.ele('series_type', {}, convertProxerTypeToMALType(animes[index].type));
+    entry.ele('series_episodes', {}, animes[index].episodesCount);
+    entry.ele('my_watched_episodes', {}, animes[index].episodesWatched);
+    entry.ele('my_status', {}, convertProxerStatusToMALStatus(animes[index].status));
 
-  // for (let index = 0; index < animes.length; index++) {
-  //   promises.push(findMALAnimeByName(animes[index].title, animes[index].type));
-  // }
+    entry.ele('my_id', {}, 0);
+    entry.ele('my_start_date', {}, '0000-00-00');
+    entry.ele('my_finish_date', {}, '0000-00-00');
+    entry.ele('my_rated');
+    entry.ele('my_score', {}, 0);
+    entry.ele('my_dvd');
+    entry.ele('my_storage');
 
-  // console.log(promises.length);
-
-  // const res = await Promise.all(promises);
-
-  // console.log(res);
-
-  // for (let index = 0; index < animes.length; index++) {
-  //   const entry = root.ele('anime');
-  //   const id = (await findMALAnimeByName(animes[index].title, animes[index].type)).mal_id;
-  // }
+    entry.ele('my_comments');
+    entry.ele('my_times_watched', {}, 0);
+    entry.ele('my_rewatch_value', {}, 0);
+    entry.ele('my_tags');
+    entry.ele('my_rewatching', {}, 0);
+    entry.ele('my_rewatching_ep', {}, 0);
+    entry.ele('update_on_import', {}, 0);
+  }
 
   const xml = root.end({ pretty: true });
 
