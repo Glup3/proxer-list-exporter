@@ -1,4 +1,4 @@
-interface Anime {
+interface ProxerAnime {
   title?: string;
   episodesWatched?: number;
   episodesCount?: number;

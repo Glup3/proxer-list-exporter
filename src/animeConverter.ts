@@ -2,6 +2,11 @@ import { request } from 'graphql-request';
 import Bottleneck from 'bottleneck';
 import builder from 'xmlbuilder';
 
+/**
+ * needed to prevent error 429 'Too Many Requests'
+ * DEFAULT Anilist API: 90 Requests per Minute
+ * 60 seconds / 90 Requests = 667 ms per Request
+ */
 const limiter = new Bottleneck({
   minTime: 700,
   maxConcurrent: 1,
@@ -62,7 +67,7 @@ export const getMALIDFromAnilist = async (name: string, type: string) => {
   return anime.idMal;
 };
 
-export const exportAnimesToMALAnimeXML = async (animes: Anime[]) => {
+export const exportAnimesToMALAnimeXML = async (animes: ProxerAnime[]) => {
   const result = await limiter.schedule(() => {
     const allTasks = animes.map(x => getMALIDFromAnilist(x.title, x.type));
 

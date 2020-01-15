@@ -67,8 +67,8 @@ const getAnimeStatusFromPosition = (position: number) => {
   }
 };
 
-export const getAnimesFromHTML = (html: string): Anime[] => {
-  const animes: Anime[] = [];
+export const getAnimesFromHTML = (html: string): ProxerAnime[] => {
+  const animes: ProxerAnime[] = [];
 
   const $ = cheerio.load(html);
   const animeTables = $('#box-table-a');
@@ -90,7 +90,7 @@ export const getAnimesFromHTML = (html: string): Anime[] => {
         const animeType = getAnimeTypeFromString($(data.get(1)).text());
         const animeStatus = getAnimeStatusFromPosition(tableIndex);
 
-        const anime: Anime = {
+        const anime: ProxerAnime = {
           title: animeName,
           episodesWatched: parseInt(episodes[0], 10),
           episodesCount: parseInt(episodes[1], 10),
