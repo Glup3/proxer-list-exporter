@@ -4,6 +4,7 @@
     "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
     "outDir": "./dist",
     "rootDir": "./src",
+    "declaration": true,
     "strict": true /* Enable all strict type-checking options. */,
     "strictNullChecks": false /* Enable strict null checks. */,
     "strictPropertyInitialization": false /* Enable strict checking of property initialization in classes. */,
