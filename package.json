@@ -13,6 +13,15 @@
   },
   "author": "Phuc Tran",
   "license": "MIT",
+  "keywords": [
+    "Proxer",
+    "MAL",
+    "MyAnimeList",
+    "Export",
+    "Anime",
+    "Manga",
+    "List"
+  ],
   "dependencies": {
     "axios": "^0.19.1",
     "bottleneck": "^2.19.5",

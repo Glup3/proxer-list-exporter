@@ -9,7 +9,7 @@ enum ListType {
   MANGA = 'manga',
 }
 
-const fetchProxerListHTML = async (userId: string, listType: ListType): Promise<AxiosResponse<string>> => {
+export const fetchProxerListHTML = async (userId: string, listType: ListType): Promise<AxiosResponse<string>> => {
   try {
     const url = `${proxerURL}/${userId}/${listType}`;
     const response = await axios.get<string, any>(url).catch(e => console.log(e));
