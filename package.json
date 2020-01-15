@@ -17,8 +17,9 @@
     "axios": "^0.19.1",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.1.0",
-    "node-myanimelist": "^2.0.0",
-    "typescript": "^3.7.2"
+    "graphql-request": "^1.8.2",
+    "typescript": "^3.7.2",
+    "xmlbuilder": "^13.0.2"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.15",
