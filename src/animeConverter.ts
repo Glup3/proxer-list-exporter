@@ -7,14 +7,16 @@ import builder from 'xmlbuilder';
  * DEFAULT Anilist API: 90 Requests per Minute
  * 60 seconds / 90 Requests = 667 ms per Request
  */
-const limiter = new Bottleneck({
-  reservoir: 90,
-  reservoirRefreshAmount: 90,
-  reservoirRefreshInterval: 60 * 1000,
+export const createLimiter = (requestsPerMinute = 90) => {
+  return new Bottleneck({
+    reservoir: requestsPerMinute,
+    reservoirRefreshAmount: requestsPerMinute,
+    reservoirRefreshInterval: 60 * 1000,
 
-  maxConcurrent: 1,
-  minTime: 700,
-});
+    maxConcurrent: 1,
+    minTime: (60 * 1000) / requestsPerMinute,
+  });
+};
 
 const convertProxerTypeToMALType = (type: string) => {
   switch (type) {
@@ -44,7 +46,7 @@ const convertProxerStatusToMALStatus = (status: string) => {
   }
 };
 
-export const getMALIDFromAnilist = async (name: string, type: string) => {
+export const getMALIDFromAnilist = async (name: string, type: string, limiter: Bottleneck) => {
   const query = `
     query ($query: String, $type: MediaType, $format: MediaFormat) {
       Page (perPage: 1) {
@@ -75,8 +77,10 @@ export const getMALIDFromAnilist = async (name: string, type: string) => {
   return anime != null ? anime.idMal : null;
 };
 
-export const exportAnimesToMALAnimeXML = async (animes: ProxerAnime[]) => {
-  const result = await Promise.all(animes.map(x => getMALIDFromAnilist(x.title, x.type)));
+export const exportAnimesToMALAnimeXML = async (animes: ProxerAnime[], requestsPerMinute = 90) => {
+  const result = await Promise.all(
+    animes.map(x => getMALIDFromAnilist(x.title, x.type, createLimiter(requestsPerMinute)))
+  );
 
   const root = builder.create('myanimelist');
   root.com('Created by Glup3 - last update 15-01-2020');
