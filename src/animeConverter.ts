@@ -60,23 +60,23 @@ export const getMALIDFromAnilist = async (name: string, type: string) => {
     }
   `;
 
-  const result = await request('https://graphql.anilist.co', query, {
-    query: name,
-    type: 'ANIME',
-    format: type,
-  });
+  const result = await limiter.schedule(() =>
+    request('https://graphql.anilist.co', query, {
+      query: name,
+      type: 'ANIME',
+      format: type,
+    }).catch(e => {
+      console.log(e);
+    })
+  );
 
   const anime = result.Page.media[0];
 
-  return anime.idMal;
+  return anime != null ? anime.idMal : null;
 };
 
 export const exportAnimesToMALAnimeXML = async (animes: ProxerAnime[]) => {
-  const result = await limiter.schedule(() => {
-    const allTasks = animes.map(x => getMALIDFromAnilist(x.title, x.type));
-
-    return Promise.all(allTasks);
-  });
+  const result = await Promise.all(animes.map(x => getMALIDFromAnilist(x.title, x.type)));
 
   const root = builder.create('myanimelist');
   root.com('Created by Glup3 - last update 15-01-2020');
