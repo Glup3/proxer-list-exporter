@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import cheerio from 'cheerio';
 
 // Glup3 ID: 519518
-const proxerURL = 'https://proxer.me/user';
+const proxerURL = 'http://crossorigin.me/https://proxer.me/user';
 
 enum ListType {
   ANIME = 'anime',
