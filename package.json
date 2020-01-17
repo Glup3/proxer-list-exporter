@@ -1,6 +1,6 @@
 {
   "name": "proxer-list-exporter",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Proxer Anime/Manga List Exporter",
   "main": "dist/index.ts",
   "types": "dist/index.d.ts",
