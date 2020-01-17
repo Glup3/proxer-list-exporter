@@ -8,7 +8,7 @@ import builder from 'xmlbuilder';
  * 60 seconds / 90 Requests = 667 ms per Request
  */
 const limiter = new Bottleneck({
-  minTime: 800,
+  minTime: 1000,
   maxConcurrent: 1,
 });
 
