@@ -8,8 +8,12 @@ import builder from 'xmlbuilder';
  * 60 seconds / 90 Requests = 667 ms per Request
  */
 const limiter = new Bottleneck({
-  minTime: 1000,
+  reservoir: 90,
+  reservoirRefreshAmount: 90,
+  reservoirRefreshInterval: 60 * 1000,
+
   maxConcurrent: 1,
+  minTime: 700,
 });
 
 const convertProxerTypeToMALType = (type: string) => {
